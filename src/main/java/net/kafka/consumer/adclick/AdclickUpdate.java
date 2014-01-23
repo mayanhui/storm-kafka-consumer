@@ -1,4 +1,4 @@
-package net.kafka.consumer.adpv;
+package net.kafka.consumer.adclick;
 
 import java.io.IOException;
 import java.util.Map;
@@ -8,11 +8,8 @@ import net.kafka.consumer.util.ConfigProperties;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-//import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.util.Bytes;
-
-//import net.sf.json.JSONObject;
 
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
@@ -20,15 +17,11 @@ import backtype.storm.topology.IBasicBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-//import backtype.storm.tuple.Values;
 
-//20140117        03      183.19.140.101  2014-01-17 03:44:51     {EFBA4702-B9B2-929A-B76D-BC4AA4E84942}  5.32.1227.1111  716     917     {"wid":"13","aid":"101853","vid":"1450739","adid":"32540","asid":"1","aspid":"1","mid":"16771","ptime":"","mg":"15,16,43,71,93,107,148,153,159,160,162,170,173,183,193","ag":"4,20,28,104,157,213,1869,1909","ecode":"0","type":"1","dpl":"0","adpid":"0","dsp":"0"}    中国    广东省  肇庆市  NULL
-
-public class AdpvUpdate implements IBasicBolt {
+public class AdclickUpdate implements IBasicBolt {
 
 	public Configuration config;
 	public HTable table;
-//	public HBaseAdmin admin;
 
 	ConfigProperties cp = ConfigFactory.getInstance().getConfigProperties(
 			ConfigFactory.APP_CONFIG_PATH);
@@ -42,10 +35,7 @@ public class AdpvUpdate implements IBasicBolt {
 				"hbase.zookeeper.quorum",
 				cp.getProperty(ConfigProperties.CONFIG_NAME_HBASE_ZOOKEEPER_QUORUM));
 		try {
-			// table = new HTable(config,
-			// Bytes.toBytes("user_behavior_attribute_noregistered"));
-			table = new HTable(config, Bytes.toBytes("realtime_adpv_stat"));
-//			admin = new HBaseAdmin(config);
+			table = new HTable(config, Bytes.toBytes("realtime_adclick_stat"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -55,13 +45,13 @@ public class AdpvUpdate implements IBasicBolt {
 		String rowkey = tuple.getString(0);
 		long amount = tuple.getLong(1);
 
-		String family = "pv";
+		String family = "clk";
 		String qualifier = "cnt";
 		//
 		try {
 			long count = table.incrementColumnValue(Bytes.toBytes(rowkey),
 					Bytes.toBytes(family), Bytes.toBytes(qualifier), amount);
-			System.out.println("[AdpvUpdate]Current count: " + count);
+			System.out.println("[AdclickUpdate]Current count: " + count);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,7 +72,6 @@ public class AdpvUpdate implements IBasicBolt {
 
 	@Override
 	public Map<String, Object> getComponentConfiguration() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
