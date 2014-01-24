@@ -54,11 +54,19 @@ public class AdpvCombinedRowkey implements IBasicBolt {
 					return;
 				}
 				
+				boolean hit = false;// if "adid":""  -> return
 				p = Pattern.compile("\\d+");
 				mc = p.matcher(adid);
 				while (mc.find()) {
 					adid = mc.group();
+					hit = true;
 				}
+				
+				if(!hit){
+					System.out.println("Invalid adid: " + adid);
+					return;
+				}
+					
 				
 				if (null != adid && adid.trim().length() > 0
 						&& !adid.trim().equals("NULL") && null != date
